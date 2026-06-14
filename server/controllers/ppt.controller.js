@@ -1,4 +1,5 @@
 import { aiService } from "../services/aiService.js"
+import { pixelsApiService } from "../services/pixelsApiService.js";
 import { pptGenService } from "../services/pptGenService.js";
 
 export const pptGen = async(req, res)=>{
@@ -11,6 +12,12 @@ export const pptGen = async(req, res)=>{
   .trim();
     const presentation = JSON.parse(cleanJson);
     console.log(presentation)
+
+    for (const item of presentation.slides) {
+  const image = await pixelsApiService(item.imageQuery);
+  item.imageQuery = image
+}
+
     await pptGenService(presentation);
     res.json({
       presentation

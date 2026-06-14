@@ -34,7 +34,7 @@ export async function pptGenService(presentation) {
 
     // Image (right side)
     slide.addImage({
-      path: "./images/default.jpg", // apni image ka path
+      path: item.imageQuery, // apni image ka path
       x: 7,
       y: 1,
       w: 2.8,
