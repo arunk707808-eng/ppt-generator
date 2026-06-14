@@ -38,7 +38,7 @@ Return ONLY valid JSON.
 
   return response.text;
   } catch (error) {
-    console.log(error)
+    
+    console.error(error)
   }
-  
 }

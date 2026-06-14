@@ -42,9 +42,12 @@ export async function pptGenService(presentation) {
     });
   });
 
-  await pptx.writeFile({
-    fileName: "presentation.pptx",
-  });
+ const fileName = `ppt-${Date.now()}.pptx`;
+
+await pptx.writeFile({
+  fileName: `./downloads/${fileName}`,
+});
 
   console.log("PPT generated successfully");
+  return fileName;
 }
