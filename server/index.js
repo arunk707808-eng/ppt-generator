@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 8000
 app.use(express.json())
 app.get("/",(req,res)=>{
-  res.send("hello server")
+  res.send("hello")
 })
 
 import pptRoutes from './routes/ppt.route.js'
