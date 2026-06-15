@@ -22,8 +22,10 @@ const App = () => {
         }),
       }
     );
-
+    console.log(response);
+console.log(response.headers.get("content-type"));
     const blob = await response.blob();
+    console.log(blob.size);
 
     const url = window.URL.createObjectURL(blob);
 
@@ -41,7 +43,7 @@ const App = () => {
     } catch (error) {
       setDownloading(false)
       console.log(error)
-      alert(error)
+      alert(response.data.message)
     }
     
   };

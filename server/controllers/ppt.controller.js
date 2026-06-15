@@ -4,23 +4,28 @@ import { aiService } from "../services/aiService.js"
 import { pixelsApiService } from "../services/pixelsApiService.js";
 import { pptGenService } from "../services/pptGenService.js";
 import { STATUS_CODES } from "http";
+import { error } from "console";
 
 export const pptGen = async(req, res)=>{
   try {
     const {topic, slides} = req.body
     const aiResponse = await aiService(topic, slides)
+    if(!aiResponse){
+      return res.status(500).json({
+        message:"genai api failed"
+      })
+    }
     const cleanJson = aiResponse
   .replace(/```json/g, "")
   .replace(/```/g, "")
   .trim();
     const presentation = JSON.parse(cleanJson);
-    // console.log(presentation)
+    console.log(presentation)
 
     for (const item of presentation.slides) {
   const image = await pixelsApiService(item.imageQuery);
   item.imageQuery = image
 }
-
    const fileName =  await pptGenService(presentation);
  res.download(
   `./downloads/${fileName}`,
@@ -28,8 +33,8 @@ export const pptGen = async(req, res)=>{
 );
   } catch (error) {
     console.log(error)
-    res.status(500).json({
-      message:"server error",
+   return res.status(500).json({
+      message:error.message,
     })
   }
 }

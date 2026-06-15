@@ -38,7 +38,6 @@ Return ONLY valid JSON.
 
   return response.text;
   } catch (error) {
-    
     console.error(error)
   }
 }
