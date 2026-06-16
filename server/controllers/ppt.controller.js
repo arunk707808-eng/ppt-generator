@@ -27,10 +27,26 @@ export const pptGen = async(req, res)=>{
   item.imageQuery = image
 }
    const fileName =  await pptGenService(presentation);
- res.download(
-  `./downloads/${fileName}`,
-  fileName
-);
+ const filePath = path.join(
+    process.cwd(),
+    "downloads",
+    fileName
+  );
+
+  res.download(filePath, fileName, (err) => {
+    if (err) {
+      console.error("Download error:", err);
+      return;
+    }
+
+    fs.unlink(filePath, (unlinkErr) => {
+      if (unlinkErr) {
+        console.error("Delete error:", unlinkErr);
+      } else {
+        console.log(`${fileName} deleted`);
+      }
+    });
+  });
   } catch (error) {
     console.log(error)
    return res.status(500).json({

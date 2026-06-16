@@ -7,7 +7,7 @@ const ai = new GoogleGenAI({
 });
 
 export async function aiService(topic, slides) {
-  try {
+try{
   const prompt = `
 Create a professional PowerPoint presentation on "${topic}".
 
