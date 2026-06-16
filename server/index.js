@@ -5,7 +5,7 @@ import dotenv from "dotenv"
 dotenv.config()
 const app = express();
 
-const url = `https://render-hosting-se2b.onrender.com`;
+const url = `https://ppt-generator-q6k3.onrender.com`;
 const interval = 30000;
 
 function reloadWebsite() {
