@@ -61,7 +61,7 @@ await pptx.writeFile({ fileName: filePath });
   } catch (error) {
     console.error("pptGenService Error:")
     console.error(error.response?.data || error.message)
-    throw new Error ("failed to generate ppt")
+    throw new Error ("failed to generate ppt. Try Again After 2 Min !")
   }
  
 }

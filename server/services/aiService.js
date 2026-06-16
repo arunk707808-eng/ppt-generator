@@ -57,6 +57,6 @@ IMPORTANT:
   } catch (error) {
     console.error("aiService Error: ")
     console.error(error.response?.data || error.message);
-    throw new Error("failed to create data for your topic. Try Again later!")
+    throw new Error("failed to create data for your topic. Try Again After 5 Min !")
   }
 }

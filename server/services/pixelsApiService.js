@@ -25,6 +25,6 @@ export const pixelsApiService = async(imageQuery) =>{
   } catch (error) {
     console.error("pexel api Error:")
     console.error(error.response?.data || error.message);
-    throw new Error("failed to fetch images for your topic")
+    throw new Error("failed to fetch images for your topic. Try again After 2 Min !")
   }
 } 
