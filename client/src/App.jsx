@@ -6,9 +6,17 @@ const App = () => {
   const [topic, setTopic] = useState("");
   const [slides, setSlides] = useState(5);
   const [downloading, setDownloading] = useState(false)
+  const [error, setError] = useState("")
 
   const downloadPPT = async () => {
     try {
+      let error = {}
+      if(!topic){
+        error.topic = "Topic is Required !"
+        setError(error);
+        return;
+      }
+      setError("")
       setDownloading(true)
       const response = await fetch(
       `${server}/api/ppt`,
@@ -64,7 +72,7 @@ const App = () => {
      <select
   value={slides}
   onChange={(e) => setSlides(Number(e.target.value))}
-  className="p-4 w-full outline-none border-2 border-white rounded-md bg-white text-black"
+  className="p-4 w-full outline-none border-2 border-white rounded-md bg-black text-white"
 >
   {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
     <option key={num} value={num}>
@@ -72,12 +80,11 @@ const App = () => {
     </option>
   ))}
 </select>
-
-      <button  onClick={downloadPPT} className='p-4 w-full bg-amber-500  rounded-lg'>
+{error && <p className='text-red-500 text-sm p-2 border border-red-500 bg-black rounded-md w-full '>{error.topic}</p>}
+      <button  onClick={downloadPPT} disabled={downloading} className='p-4 w-full bg-amber-500  rounded-lg cursor-pointer'>
        {downloading ? "Downloading..." : "Download PPT"} 
       </button>
       </div>
-      
     </div>
   );
 }
