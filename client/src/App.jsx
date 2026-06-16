@@ -61,13 +61,17 @@ const App = () => {
         className='p-4 w-full outline-none border-2 border-white rounded-md'
       />
 
-      <input
-        type="number"
-        placeholder="Slides"
-        value={slides}
-        onChange={(e) => setSlides(Number(e.target.value))}
-        className='p-4 w-full outline-none border-2 border-white rounded-md'
-      />
+     <select
+  value={slides}
+  onChange={(e) => setSlides(Number(e.target.value))}
+  className="p-4 w-full outline-none border-2 border-white rounded-md bg-white text-black"
+>
+  {[2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+    <option key={num} value={num}>
+      {num} Slides
+    </option>
+  ))}
+</select>
 
       <button  onClick={downloadPPT} className='p-4 w-full bg-amber-500  rounded-lg'>
        {downloading ? "Downloading..." : "Download PPT"} 
