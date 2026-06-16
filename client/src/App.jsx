@@ -23,6 +23,12 @@ const App = () => {
         }),
       }
     );
+   if (!response.ok) {
+  const errorData = await response.json();
+  throw new Error(
+    errorData.message || "something went wrong"
+  );
+}
     const blob = await response.blob();
 
     const url = window.URL.createObjectURL(blob);
@@ -39,9 +45,8 @@ const App = () => {
     setDownloading(false)
     } catch (error) {
       setDownloading(false)
-      alert(error)
+      alert(error.message)
     }
-    
   };
 
   return (
