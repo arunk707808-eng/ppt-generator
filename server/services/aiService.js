@@ -1,7 +1,11 @@
-import axios from "axios";
+import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 
 dotenv.config();
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 export async function aiService(topic, slides) {
   try {
@@ -21,51 +25,11 @@ For each slide:
 
 1. Create a professional slide title.
 2. Provide 4-6 concise, presentation-ready bullet points.
-3. Bullet points must be:
-   - Specific and informative
-   - Suitable for business, academic, and professional presentations
-   - Free from repetition
-   - Short enough to fit comfortably on a slide
+3. Bullet points must be specific, informative, and non-repetitive.
+4. Generate a detailed imageQuery optimized for Pexels stock photos.
+5. imageQuery should be 4-8 words and describe a realistic professional image.
 
-4. Generate a highly detailed imageQuery for stock photo websites like Pexels.
-   The imageQuery should:
-   - Describe a realistic professional photo
-   - Include relevant context
-   - Be 4-8 words long
-   - Avoid generic terms
-   - Be optimized for finding high-quality images
-
-Examples:
-
-Topic: Artificial Intelligence
-
-Bad imageQuery:
-"AI"
-
-Good imageQuery:
-"artificial intelligence business analytics dashboard"
-
-Bad imageQuery:
-"technology"
-
-Good imageQuery:
-"modern data center servers technology"
-
-Bad imageQuery:
-"team"
-
-Good imageQuery:
-"corporate team meeting strategy discussion"
-
-Presentation Style:
-
-- Professional
-- Modern
-- Corporate quality
-- Visually appealing
-- Suitable for executives, students, educators, and business audiences
-
-Return ONLY valid JSON.
+Return ONLY valid JSON in this format:
 
 {
   "slides": [
@@ -82,33 +46,17 @@ IMPORTANT:
 - No markdown.
 - No explanations.
 - No code blocks.
-- Ensure valid parsable JSON.
 `;
 
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
 
-    return response.data.choices[0].message.content;
+    return response.text;
   } catch (error) {
-    console.error(
-      error.response?.data || error.message
-    );
-    throw error;
+    console.error("aiService Error: ")
+    console.error(error.response?.data || error.message);
+    throw new Error("failed to create data for your topic")
   }
 }

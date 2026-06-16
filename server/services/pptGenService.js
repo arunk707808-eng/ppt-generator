@@ -3,7 +3,8 @@ import path from "path";
 import fs from "fs"
 
 export async function pptGenService(presentation) {
-  const pptx = new pptxgen();
+  try {
+     const pptx = new pptxgen();
 
   pptx.layout = "LAYOUT_WIDE"; // 16:9
 
@@ -57,4 +58,10 @@ await pptx.writeFile({ fileName: filePath });
 
   console.log("PPT generated successfully");
   return fileName;
+  } catch (error) {
+    console.error("pptGenService Error:")
+    console.error(error.response?.data || error.message)
+    throw new Error ("failed to generate ppt")
+  }
+ 
 }

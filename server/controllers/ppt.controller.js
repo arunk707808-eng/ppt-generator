@@ -10,17 +10,11 @@ export const pptGen = async(req, res)=>{
   try {
     const {topic, slides} = req.body
     const aiResponse = await aiService(topic, slides)
-    if(!aiResponse){
-      return res.status(500).json({
-        message:"genai api failed"
-      })
-    }
     const cleanJson = aiResponse
   .replace(/```json/g, "")
   .replace(/```/g, "")
   .trim();
     const presentation = JSON.parse(cleanJson);
-    console.log(presentation)
 
     for (const item of presentation.slides) {
   const image = await pixelsApiService(item.imageQuery);
@@ -48,9 +42,9 @@ export const pptGen = async(req, res)=>{
     });
   });
   } catch (error) {
-    console.log(error)
+    console.error(error)
    return res.status(500).json({
-      message:error.message,
+      message: error.message,
     })
   }
 }

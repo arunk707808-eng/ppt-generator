@@ -1,24 +1,28 @@
 export const pixelsApiService = async(imageQuery) =>{
+  try {
+    const response = await axios.get(
+      "https://api.pexels.com/v1/search",
+      {
+        params: {
+          query: imageQuery,
+          per_page: 1,
+        },
+        headers: {
+          Authorization: process.env.PEXELS_API_KEY,
+        },
+      }
+    );
 
-  const response = await fetch(
-    `https://api.pexels.com/v1/search?query=${encodeURIComponent(
-      imageQuery
-    )}&per_page=1`,
-    {
-      headers: {
-        Authorization: process.env.PEXELS_API_KEY,
-      },
+    const data = response.data;
+
+    if (!data.photos?.length) {
+      return null;
     }
-  );
-  if(!response.ok){
-    throw error("something went wrong in pixels api" );
-    
-  }
-  const data = await response.json();
 
-  if (!data.photos || data.photos.length === 0) {
-    return null;
+    return data.photos[0].src.large;
+  } catch (error) {
+    console.error("pexel api Error:")
+    console.error(error.response?.data || error.message);
+    throw new Error("failed to fetch images for your topic")
   }
-
-  return data.photos[0].src.large;
 } 
