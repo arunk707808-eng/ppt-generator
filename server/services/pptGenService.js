@@ -42,11 +42,16 @@ export async function pptGenService(presentation) {
     });
   });
 
- const fileName = `ppt-${Date.now()}.pptx`;
+ const downloadsDir = path.join(process.cwd(), "downloads");
 
-await pptx.writeFile({
-  fileName: `./downloads/${fileName}`,
-});
+if (!fs.existsSync(downloadsDir)) {
+  fs.mkdirSync(downloadsDir, { recursive: true });
+}
+
+const fileName = `ppt-${Date.now()}.pptx`;
+const filePath = path.join(downloadsDir, fileName);
+
+await pptx.writeFile({ fileName: filePath });
 
   console.log("PPT generated successfully");
   return fileName;

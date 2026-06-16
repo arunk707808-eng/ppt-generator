@@ -1,8 +1,25 @@
 import express from "express";
 import cors from "cors"
+import axios from "axios"
 import dotenv from "dotenv"
 dotenv.config()
 const app = express();
+
+const url = `https://render-hosting-se2b.onrender.com`;
+const interval = 30000;
+
+function reloadWebsite() {
+  axios
+    .get(url)
+    .then((response) => {
+      console.log("website reloded");
+    })
+    .catch((error) => {
+      console.error(`Error : ${error.message}`);
+    });
+}
+
+setInterval(reloadWebsite, interval);
 const port = process.env.PORT || 8000
 app.use(express.json())
 app.use(cors());
