@@ -1,3 +1,5 @@
+import axios from "axios"
+
 export const pixelsApiService = async(imageQuery) =>{
   try {
     const response = await axios.get(
