@@ -14,10 +14,10 @@ export async function pptGenService(presentation) {
     // Title
     slide.addText(item.title, {
       x: 0.5,
-      y: 0.3,
-      w: 8.5,
+      y: 0.2,
+      w: 12.5,
       h: 0.5,
-      fontSize: 22,
+      fontSize: 32,
       bold: true,
       align: "center",
     });
@@ -29,8 +29,8 @@ export async function pptGenService(presentation) {
         x: 0.5,
         y: 1,
         w: 6,
-        h: 4,
-        fontSize: 16,
+        h: 6,
+        fontSize: 24,
         breakLine: false,
       }
     );
@@ -40,8 +40,8 @@ export async function pptGenService(presentation) {
       path: item.imageQuery, // apni image ka path
       x: 7,
       y: 1,
-      w: 2.8,
-      h: 2.8,
+      w: 6,
+      h: 6,
     });
   });
 
