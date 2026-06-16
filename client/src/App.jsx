@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
+import { server } from './main';
 
 const App = () => {
   const [topic, setTopic] = useState("");
@@ -10,7 +11,7 @@ const App = () => {
     try {
       setDownloading(true)
       const response = await fetch(
-      "http://localhost:5000/api/ppt",
+      `${server}/api/ppt`,
       {
         method: "POST",
         headers: {
@@ -22,10 +23,7 @@ const App = () => {
         }),
       }
     );
-    console.log(response);
-console.log(response.headers.get("content-type"));
     const blob = await response.blob();
-    console.log(blob.size);
 
     const url = window.URL.createObjectURL(blob);
 
@@ -36,28 +34,26 @@ console.log(response.headers.get("content-type"));
 
     document.body.appendChild(a);
     a.click();
-
     a.remove();
     window.URL.revokeObjectURL(url);
     setDownloading(false)
     } catch (error) {
       setDownloading(false)
-      console.log(error)
-      alert(response.data.message)
+      alert(error)
     }
     
   };
 
   return (
-    <div className='h-screen px-4 bg-black text-white flex justify-center ' >
-      <div className='flex flex-col gap-4 min-w-lg mt-4'>
+    <div className='h-screen px-4 w-screen bg-black text-white flex justify-center ' >
+      <div className='flex flex-col gap-4 max-w-md mt-4 px-4'>
 <h1 className='font-bold text-4xl'>MAKE PPT SLIDES WITH AI </h1>
       <input
         type="text"
         placeholder="Enter Topic"
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
-        className='p-4 w-full outline-none border-2 border-white'
+        className='p-4 w-full outline-none border-2 border-white rounded-md'
       />
 
       <input
@@ -65,7 +61,7 @@ console.log(response.headers.get("content-type"));
         placeholder="Slides"
         value={slides}
         onChange={(e) => setSlides(Number(e.target.value))}
-        className='p-4 w-full outline-none border-2 border-white '
+        className='p-4 w-full outline-none border-2 border-white rounded-md'
       />
 
       <button  onClick={downloadPPT} className='p-4 w-full bg-amber-500  rounded-lg'>
