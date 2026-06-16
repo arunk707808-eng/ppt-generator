@@ -1,4 +1,6 @@
 import pptxgen from "pptxgenjs";
+import path from "path";
+import fs from "fs"
 
 export async function pptGenService(presentation) {
   const pptx = new pptxgen();
