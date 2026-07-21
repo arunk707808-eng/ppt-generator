@@ -7,5 +7,5 @@ export const server = "https://ppt-generator-q6k3.onrender.com"
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
-  </StrictMode>,
+  </StrictMode>
 )
