@@ -1,9 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { server } from "../main.jsx";
 
 const suggestions = ["Quarterly Business Review", "Market Entry Strategy", "Product Launch"];
-
-const deckSections = ["Executive summary", "The opportunity", "Strategic approach", "Market signals", "Implementation plan", "Key milestones", "Financial outlook", "Recommendations"];
 
 function LeafMark() {
   return <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 23V5M14 17C8.7 17 5 13.8 5 8.5c5.3 0 9 3.2 9 8.5ZM14 14c4.8 0 8.4-3.2 8.4-8.4C17.6 5.6 14 9.1 14 14Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>;
@@ -20,12 +18,6 @@ const Home = () => {
   const [generatedDeck, setGeneratedDeck] = useState(null);
   const [error, setError] = useState("");
 
-  const previewSlides = useMemo(() => Array.from({ length: slides }, (_, index) => ({
-    number: index + 1,
-    title: index === 0 ? topic : `${deckSections[(index - 1) % deckSections.length]}: ${topic}`,
-    label: index === 0 ? "TITLE SLIDE" : `SECTION ${String(index).padStart(2, "0")}`,
-  })), [topic, slides]);
-
   const generatePresentation = async () => {
     const cleanTopic = topic.trim();
     if (!cleanTopic) {
@@ -36,7 +28,7 @@ const Home = () => {
     setGeneratedDeck(null);
     setIsGenerating(true);
     try {
-      const response = await fetch(`${server}/api/ppt`, {
+      const response = await fetch(`${server}/api/ppt/preview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic: cleanTopic, slides }),
@@ -45,8 +37,8 @@ const Home = () => {
         const data = await response.json().catch(() => ({}));
         throw new Error(data.message || "Unable to generate the presentation. Please try again.");
       }
-      const pptxBlob = await response.blob();
-      setGeneratedDeck({ blob: pptxBlob, topic: cleanTopic, slides });
+      const result = await response.json();
+      setGeneratedDeck({ topic: cleanTopic, slides, presentation: result.presentation, downloadUrl: result.downloadUrl });
     } catch (requestError) {
       setError(requestError.message || "Unable to generate the presentation. Please try again.");
     } finally {
@@ -56,14 +48,7 @@ const Home = () => {
 
   const downloadPresentation = () => {
     if (!generatedDeck) return;
-    const url = URL.createObjectURL(generatedDeck.blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${generatedDeck.topic.replace(/[^a-z0-9]+/gi, "-").replace(/(^-|-$)/g, "").toLowerCase() || "presentation"}.pptx`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    window.location.assign(`${server}${generatedDeck.downloadUrl}`);
   };
 
   return <main>
@@ -98,10 +83,10 @@ const Home = () => {
 
     {generatedDeck && <section className="preview-section" aria-live="polite">
       <div className="preview-heading"><div><span className="eyebrow">PRESENTATION READY</span><h2>{generatedDeck.topic}</h2></div><button className="download-button active-download" onClick={downloadPresentation}><DownloadIcon /> Download PPTX</button></div>
-      <p className="preview-copy">Your {generatedDeck.slides}-slide deck is ready. Review the generated deck outline below, then download the editable PowerPoint file.</p>
+      <p className="preview-copy">This preview uses the same titles, bullets, and images as the generated PowerPoint file.</p>
       <div className="preview-grid">
-        {previewSlides.map((slide) => <article className={`slide-preview ${slide.number === 1 ? "cover-slide" : ""}`} key={slide.number}>
-          <span>{slide.label}</span><strong>{slide.title}</strong><div className="slide-lines"><b/><b/><b/></div><em>{String(slide.number).padStart(2, "0")}</em>
+        {generatedDeck.presentation.slides.map((slide, index) => <article className="slide-preview" key={`${slide.title}-${index}`}>
+          <h3>{slide.title}</h3><div className="slide-body"><ul>{slide.bullets.map((bullet, bulletIndex) => <li key={bulletIndex}>{bullet}</li>)}</ul>{slide.imageQuery ? <img src={slide.imageQuery} alt="" /> : <div className="image-placeholder" />}</div><em>{String(index + 1).padStart(2, "0")}</em>
         </article>)}
       </div>
     </section>}
