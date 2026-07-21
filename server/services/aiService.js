@@ -23,7 +23,7 @@ Requirements:
 
 For each slide:
 
-1. Create a professional slide title.
+1. Create a professional slide title but small and clean.
 2. Provide 4-6 concise, presentation-ready bullet points.
 3. Bullet points must be specific, informative, and non-repetitive.
 4. Generate a detailed imageQuery optimized for Pexels stock photos.
