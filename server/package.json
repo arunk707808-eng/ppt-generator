@@ -19,5 +19,8 @@
     "express": "^5.2.1",
     "nodemon": "^3.1.14",
     "pptxgenjs": "^4.0.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6"
   }
 }

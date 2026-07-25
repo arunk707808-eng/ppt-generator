@@ -29,6 +29,7 @@ IMPORTANT RULES:
 - Do NOT change slide titles.
 - Do NOT change layoutType.
 - Follow the presentation plan exactly.
+- Minimum 5 bullets are enough, clean and concise.
 
 For each slide:
 
