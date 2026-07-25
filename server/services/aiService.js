@@ -7,7 +7,7 @@ const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-export async function generateContent(topic, plan) {
+export async function aiService(topic, plan) {
   try {
     const prompt = `
 You are a world-class presentation content writer.
