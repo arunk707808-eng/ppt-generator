@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { server } from "../main.jsx";
+import { useEffect, useState } from "react";
+import { apiServer } from "../config/api.js";
 
 const suggestions = [
   // "Quarterly Business Review",
   // "Market Entry Strategy",
   // "Product Launch",
-  
 ];
 
 function LeafMark() {
@@ -42,8 +41,18 @@ const Home = () => {
   const [topic, setTopic] = useState("");
   const [slides, setSlides] = useState(5);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [generatedDeck, setGeneratedDeck] = useState(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!generatedDeck) return;
+
+    document.getElementById("preview-section")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [generatedDeck]);
 
   const generatePresentation = async () => {
     const cleanTopic = topic.trim();
@@ -58,7 +67,7 @@ const Home = () => {
     setIsGenerating(true);
 
     try {
-      const response = await fetch(`${server}/api/ppt/preview`, {
+      const response = await fetch(`${apiServer}/api/ppt/preview`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,6 +88,13 @@ const Home = () => {
       }
 
       const result = await response.json();
+      console.log("Generated Presentation Preview:", result);
+
+      if (!Array.isArray(result?.presentation?.slides) || !result.downloadUrl) {
+        throw new Error(
+          "The server returned an incomplete presentation preview."
+        );
+      }
 
       setGeneratedDeck({
         topic: cleanTopic,
@@ -99,7 +115,57 @@ const Home = () => {
   const downloadPresentation = () => {
     if (!generatedDeck) return;
 
-    window.location.assign(`${server}${generatedDeck.downloadUrl}`);
+    window.location.assign(`${apiServer}${generatedDeck.downloadUrl}`);
+  };
+
+  const generateAndDownloadPresentation = async () => {
+    const cleanTopic = topic.trim();
+
+    if (!cleanTopic) {
+      setError("Enter a presentation topic to download your deck.");
+      return;
+    }
+
+    setError("");
+    setIsDownloading(true);
+
+    try {
+      const response = await fetch(`${apiServer}/api/ppt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: cleanTopic, slides }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(
+          data.message ||
+            "Unable to generate the presentation. Please try again."
+        );
+      }
+
+      const file = await response.blob();
+      const contentDisposition =
+        response.headers.get("content-disposition") || "";
+      const fileName =
+        contentDisposition.match(/filename="?([^";]+)"?/i)?.[1] ||
+        "presentation.pptx";
+      const downloadUrl = URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+    } catch (requestError) {
+      setError(
+        requestError.message ||
+          "Unable to generate the presentation. Please try again."
+      );
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -145,7 +211,7 @@ const Home = () => {
                 value={slides}
                 onChange={(event) => setSlides(Number(event.target.value))}
               >
-                {[3,4,5, 6, 7, 8, 9, 10, 12, 15].map((number) => (
+                {[3, 4, 5, 6, 7, 8, 9, 10, 12, 15].map((number) => (
                   <option key={number} value={number}>
                     {number} Slides
                   </option>
@@ -153,26 +219,24 @@ const Home = () => {
               </select>
             </label>
           </div>
-{
-  suggestions.length>0 &&
-  <div className="suggestions">
-            <i>Try:</i>
+          {suggestions.length > 0 && (
+            <div className="suggestions">
+              <i>Try:</i>
 
-            {suggestions?.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => {
-                  setTopic(item);
-                  setError("");
-                }}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-}
-          
+              {suggestions?.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => {
+                    setTopic(item);
+                    setError("");
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          )}
 
           {error && (
             <p className="form-error" role="alert">
@@ -181,26 +245,38 @@ const Home = () => {
           )}
 
           <div className="form-actions">
-            <a href="#preview-section"  className="w-full">
-              <button
-              className="generate-button "
+            <button
+              className="generate-button"
               type="button"
               onClick={generatePresentation}
-              disabled={isGenerating}
+              disabled={isGenerating || isDownloading}
             >
               <LeafMark />
               {isGenerating
                 ? "Generating presentation…"
                 : "Generate Presentation"}
             </button>
-            </a>
-            
+            <button
+              className="download-button active-download direct-download-button"
+              type="button"
+              onClick={generateAndDownloadPresentation}
+              disabled={isGenerating || isDownloading}
+            >
+              <DownloadIcon />
+              {isDownloading
+                ? "Preparing download…"
+                : "Generate & Download PPTX"}
+            </button>
           </div>
         </div>
       </section>
 
       {generatedDeck && (
-        <section className="preview-section" id="preview-section" aria-live="polite">
+        <section
+          className="preview-section"
+          id="preview-section"
+          aria-live="polite"
+        >
           <div className="preview-heading">
             <div>
               <span className="eyebrow">PRESENTATION READY</span>
@@ -222,30 +298,41 @@ const Home = () => {
           </p>
 
           <div className="preview-grid">
-            {generatedDeck.presentation.slides.map((slide, index) => (
-              <article
-                className="slide-preview"
-                key={`${slide.title}-${index}`}
-              >
-                <h3>{slide.title}</h3>
+            {generatedDeck.presentation.slides.map((slide, index) => {
+              const bullets = Array.isArray(slide.bullets) ? slide.bullets : [];
 
-                <div className="slide-body">
-                  <ul>
-                    {slide.bullets.map((bullet, bulletIndex) => (
-                      <li key={bulletIndex}>{bullet}</li>
-                    ))}
-                  </ul>
+              return (
+                <article
+                  className="slide-preview"
+                  key={`${slide.slideNumber ?? index}-${slide.title ?? "slide"}`}
+                >
+                  <h3>{slide.title || `Slide ${index + 1}`}</h3>
 
-                  {slide.imageQuery ? (
-                    <img src={slide.imageQuery} alt="" />
-                  ) : (
-                    <div className="image-placeholder" />
-                  )}
-                </div>
+                  <div className="slide-body">
+                    {bullets.length > 0 ? (
+                      <ul>
+                        {slide.bullets.map((bullet, bulletIndex) => (
+                          <li key={bulletIndex}>{bullet}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>
+                        {slide.subtitle ||
+                          "Preview content is available in the downloaded deck."}
+                      </p>
+                    )}
 
-                <em>{String(index + 1).padStart(2, "0")}</em>
-              </article>
-            ))}
+                    {slide.imageQuery ? (
+                      <img src={slide.imageQuery} alt="" />
+                    ) : (
+                      <div className="image-placeholder" />
+                    )}
+                  </div>
+
+                  <em>{String(index + 1).padStart(2, "0")}</em>
+                </article>
+              );
+            })}
           </div>
         </section>
       )}

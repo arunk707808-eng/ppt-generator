@@ -14,7 +14,7 @@ async function createPresentation(topic, slides) {
   
   const response = await aiService(topic,plan);
   console.log("response:->",response);
-  process.exit(1)
+  // process.exit(1)
   const presentation = JSON.parse(
     response
       .replace(/```json/g, "")
