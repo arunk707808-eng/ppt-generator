@@ -31,7 +31,7 @@ Instructions:
 5. Avoid repeating ideas.
 6. Generate an engaging presentation title.
 7. Generate a unique title for every slide.
-8.Generate a unique, clean and short line purpose for every slide.
+8.Generate a suitable, clean and concise purpose for every slide.
 9. Choose the most suitable and unique layoutType for every slide.
 10. Do NOT generate:
    - bullet points

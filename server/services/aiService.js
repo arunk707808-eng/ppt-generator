@@ -58,6 +58,20 @@ Expected JSON:
     }
   ]
 }
+  Generate content according to the slide's layoutType.
+
+Rules:
+
+- cover → subtitle + imageQuery
+- content → subtitle + bullets + imageQuery
+- timeline → subtitle + events[] + imageQuery
+- process → subtitle + steps[] + imageQuery
+- comparison → subtitle + comparison data
+- table → headers + rows
+- chart → labels + values
+- summary → keyTakeaways
+
+Never generate bullets for timeline, process, comparison, table or chart layouts.
 
 Return RAW JSON only.
 No markdown.
