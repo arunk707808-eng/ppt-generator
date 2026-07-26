@@ -1,12 +1,14 @@
 export function renderCover(slide, data) {
   // Background Image
+  if(data.imageQuery) {
   slide.addImage({
-    path: data.imagePath,
+    path: data.imageQuery,
     x: 0,
     y: 0,
     w: 13.333,
     h: 7.5,
   });
+}
 
   // Dark overlay for better readability
   slide.addShape("rect", {

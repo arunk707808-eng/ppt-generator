@@ -41,6 +41,12 @@ For each slide:
 6. Generate an imageQuery suitable for Pexels.
 7. imageQuery should contain 4-8 realistic keywords.
 
+Timeline Rules:
+- Maximum 6 events.
+- yearRange: maximum 25 characters.
+- description: maximum 10-15 words.
+- One concise sentence only.
+
 Return ONLY valid JSON.
 
 Expected JSON:
@@ -89,6 +95,6 @@ No code fences.
     console.error("Content API Error");
     console.error(error.response?.data || error.message);
 
-    throw new Error("Failed to generate slide content.");
+    throw new Error("Request limit reached. Please try again after 2 minutes.");
   }
 }

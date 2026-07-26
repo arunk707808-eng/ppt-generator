@@ -1,3 +1,22 @@
+import path from "path";
+
+import pptxgen from "pptxgenjs";
+import { renderComparison } from "../pptLayouts/comparison.js";
+import { renderContent } from "../pptLayouts/content.js";
+import { renderCover } from "../pptLayouts/cover.js";
+import { renderProcess } from "../pptLayouts/process.js";
+import { renderSummary } from "../pptLayouts/summary.js";
+import { renderTimeline } from "../pptLayouts/timeline.js";
+import { renderTable } from "../pptLayouts/table.js";
+import { renderChart } from "../pptLayouts/chart.js";
+import { renderImageFocus } from "../pptLayouts/imageFocus.js";
+import { renderQuote } from "../pptLayouts/quote.js";
+
+export async function pptGenService(presentation) {
+  const pptx = new pptxgen();
+
+  pptx.layout = "LAYOUT_WIDE";
+
 for (const slideData of presentation.slides) {
     const slide = pptx.addSlide();
 
@@ -45,4 +64,12 @@ for (const slideData of presentation.slides) {
         default:
             renderContent(slide, slideData);
     }
+}
+ const fileName = `presentation-${Date.now()}.pptx`;
+
+  await pptx.writeFile({
+    fileName: path.join(process.cwd(), "downloads", fileName),
+  });
+
+  return fileName;
 }

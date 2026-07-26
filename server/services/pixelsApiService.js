@@ -27,4 +27,4 @@ export const pixelsApiService = async(imageQuery) =>{
     console.error(error.response?.data || error.message);
     throw new Error("failed to fetch images for your topic. Try again After 2 Min !")
   }
-} 
+}

@@ -216,6 +216,12 @@ select:focus {
   color: #021a0d;
   width: 100%;
 }
+.direct-download-button {
+  height: 55px;
+  flex: 1;
+  padding: 0 18px;
+  white-space: nowrap;
+}
 .generate-button:hover:not(:disabled) {
   background: #16ed91;
 }
@@ -492,6 +498,12 @@ footer a {
   .fields,
   .form-actions {
     grid-template-columns: 1fr;
+  }
+  .form-actions {
+    flex-direction: column;
+  }
+  .direct-download-button {
+    width: 100%;
   }
   .features {
     grid-template-columns: 1fr;

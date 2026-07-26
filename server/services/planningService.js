@@ -99,6 +99,6 @@ No explanations.
     console.error("Planning Service Error");
     console.error(error.response?.data || error.message);
 
-    throw new Error("Failed to generate presentation plan.");
+    throw new Error(" Request limit reached. Please try again after 2 minutes.");
   }
 }
