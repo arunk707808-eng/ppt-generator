@@ -1,67 +1,48 @@
-import pptxgen from "pptxgenjs";
-import path from "path";
-import fs from "fs"
-
-export async function pptGenService(presentation) {
-  try {
-     const pptx = new pptxgen();
-
-  pptx.layout = "LAYOUT_WIDE"; // 16:9
-
-  presentation.slides.forEach((item) => {
+for (const slideData of presentation.slides) {
     const slide = pptx.addSlide();
 
-    // Title
-    slide.addText(item.title, {
-      x: 0.5,
-      y: 0.2,
-      w: 12.5,
-      h: 0.5,
-      fontSize: 32,
-      bold: true,
-      align: "center",
-    });
+    switch (slideData.layoutType) {
+        case "cover":
+            renderCover(slide, slideData);
+            break;
 
-    // Bullets (left side)
-    slide.addText(
-      item.bullets.map((b) => `• ${b}`).join("\n"),
-      {
-        x: 0.5,
-        y: 1,
-        w: 6,
-        h: 6,
-        fontSize: 24,
-        breakLine: false,
-      }
-    );
+        case "content":
+            renderContent(slide, slideData);
+            break;
 
-    // Image (right side)
-    slide.addImage({
-      path: item.imageQuery, // apni image ka path
-      x: 7,
-      y: 1,
-      w: 6,
-      h: 6,
-    });
-  });
+        case "timeline":
+            renderTimeline(slide, slideData);
+            break;
 
- const downloadsDir = path.join(process.cwd(), "downloads");
+        case "process":
+            renderProcess(slide, slideData);
+            break;
 
-if (!fs.existsSync(downloadsDir)) {
-  fs.mkdirSync(downloadsDir, { recursive: true });
-}
+        case "comparison":
+            renderComparison(slide, slideData);
+            break;
 
-const fileName = `ppt-${Date.now()}.pptx`;
-const filePath = path.join(downloadsDir, fileName);
+        case "table":
+            renderTable(slide, slideData);
+            break;
 
-await pptx.writeFile({ fileName: filePath });
+        case "chart":
+            renderChart(slide, slideData);
+            break;
 
-  console.log("PPT generated successfully");
-  return fileName;
-  } catch (error) {
-    console.error("pptGenService Error:")
-    console.error(error.response?.data || error.message)
-    throw new Error ("failed to generate ppt. Try Again After 2 Min !")
-  }
- 
+        case "summary":
+            renderSummary(slide, slideData);
+            break;
+
+        case "image-focus":
+            renderImageFocus(slide, slideData);
+            break;
+
+        case "quote":
+            renderQuote(slide, slideData);
+            break;
+
+        default:
+            renderContent(slide, slideData);
+    }
 }
